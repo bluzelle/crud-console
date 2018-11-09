@@ -5,7 +5,8 @@
     "bluzelle": "^0.3.275",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "optimist": "^0.6.1"
+    "optimist": "^0.6.1",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "./src/crud-console.js",
