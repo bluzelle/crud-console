@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pkg --out-path=dist crud-client.js
+pkg --out-path=dist src/crud-console.js
