@@ -15,17 +15,13 @@ const {host, port, uuid} = defaults({
 
 const getBluzelle = memoize(() => new BluzelleClient(`ws://${host}:${port}`, uuid));
 
-const getReadLine = memoize(() => {
-    const readline = require('readline');
-    const rl = readline.createInterface({
+const getReadLine = memoize(() => require('readline')
+    .createInterface({
         input: process.stdin,
         output: process.stdout,
         prompt: '> '
-    });
-
-    rl.on('line', line => commandQueue.push(line));
-    return rl;
-});
+    }).on('line', line => commandQueue.push(line))
+);
 
 const showHeader = () =>
     console.log(`
