@@ -5,7 +5,7 @@ Command line client for Bluzelle DB
 ### Quick Start
 
 * download the executable from the /dist directory for your OS
-* ./crud-console-[os] --host=xxx.xxx.xxx.xxx --port=xxxxx --uuid=my-uuid`
+* ./crud-console-[os] [--host=xxx.xxx.xxx.xxx] [--port=xxxxx] [--uuid=my-uuid]`
 
 ### Example Session
 
