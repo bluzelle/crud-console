@@ -1,11 +1,20 @@
 #!/usr/bin/env node
 const {BluzelleClient} = require('bluzelle');
 const {defaults} = require('lodash');
-const carrier = require('carrier');
+
+
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '> '
+});
+
+
 
 const commandQueue = [];
 
-carrier.carry(process.stdin, line => commandQueue.push(line));
+rl.on('line', line => commandQueue.push(line));
 
 const {host, port, namespace} = defaults(require('optimist').argv, {
     host: 'test.network.bluzelle.com',
@@ -26,7 +35,7 @@ const processCommand = ([cmd, ...rest]) => bluzelle[cmd](...rest)
         });
 
 const readyPrompt = () => {
-    process.stdout.write('? ');
+    rl.prompt();
     waitInput();
 };
 
