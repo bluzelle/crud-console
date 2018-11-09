@@ -5,12 +5,12 @@ Command line client for Bluzelle DB
 ### Quick Start
 
 * download the executable from the /dist directory for your OS
-* ./crud-console-[os] --host=xxx.xxx.xxx.xxx --port=xxxxx --namespace=my-namespace`
+* ./crud-console-[os] --host=xxx.xxx.xxx.xxx --port=xxxxx --uuid=my-uuid`
 
 ### Example Session
 
 ```
-scott$ ./crud-console-macos --namespace=scott
+scott$ ./crud-console-macos --uuid=scott
  
  crud-client (test.network.bluzelle.com:51010/scott)
  TYPE "help" for a list of commands
