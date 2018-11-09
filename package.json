@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bluzelle": "^0.3.275",
+    "optimist": "^0.6.1",
+    "prompt-base": "^5.0.0"
+  }
+}
