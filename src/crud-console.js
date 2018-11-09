@@ -4,6 +4,16 @@ const {defaults, extend} = require('lodash');
 const {parseLine} = require('./LineParser');
 const {pipe} = require('lodash/fp');
 
+const commandQueue = [];
+
+const {host, port, namespace} = defaults(require('optimist').argv, {
+    host: 'test.network.bluzelle.com',
+    port: '51010',
+    namespace: undefined
+});
+
+global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
+
 
 const readline = require('readline');
 const rl = readline.createInterface({
@@ -12,26 +22,13 @@ const rl = readline.createInterface({
     prompt: '> '
 });
 
-
-
-const commandQueue = [];
-
 rl.on('line', line => commandQueue.push(line));
 
-const {host, port, namespace} = defaults(require('optimist').argv, {
-    host: 'test.network.bluzelle.com',
-    port: '51010',
-    namespace: undefined
-});
 
 console.log(`
 crud-client (${host}:${port}/${namespace})
 TYPE "help" for a list of commands
 `);
-
-global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
-
-
 
 const processCommand = ([cmd, ...rest]) => COMMANDS[cmd]([cmd, ...rest]);
 
@@ -68,7 +65,5 @@ const COMMANDS =  pipe(
     list => list.reduce((cmds, it) => extend(cmds, {[it]: processBluzelleCommand}), {}),
     cmds => extend(cmds, {help:  showHelp})
 )(bluzelle);
-
-console.log(COMMANDS);
 
 readyPrompt();
