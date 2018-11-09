@@ -1,12 +1,10 @@
 #!/usr/bin/env node
-const Prompt = require('prompt-base');
 const {BluzelleClient} = require('bluzelle');
 const {defaults} = require('lodash');
-
+const carrier = require('carrier');
 
 const commandQueue = [];
 
-const carrier = require('carrier');
 carrier.carry(process.stdin, line => commandQueue.push(line));
 
 const {host, port, namespace} = defaults(require('optimist').argv, {
