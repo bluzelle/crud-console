@@ -19,39 +19,21 @@ console.log(`crud-client (${host}:${port}/${namespace})`);
 global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
 
 
-const processCommand = async ([cmd, ...rest]) =>
-    await bluzelle[cmd](...rest)
+const processCommand = ([cmd, ...rest]) => bluzelle[cmd](...rest)
         .then(console.log)
-        .then(() => setTimeout(loop))
+        .then(() => setTimeout(readyPrompt))
         .catch(e => {
             console.log(e);
-            setTimeout(loop);
+            setTimeout(readyPrompt);
         });
 
-
-const loop = async () => {
-    if(commandQueue.length) {
-        await processCommand(commandQueue.shift().split(' '))
-        process.stdout.write('? ');
-    }
-    setTimeout(loop, 100);
+const readyPrompt = () => {
+    process.stdout.write('? ');
+    waitInput();
 };
 
-process.stdout.write('? ');
-loop();
+const waitInput = async () => commandQueue.length ? (
+    await processCommand(commandQueue.shift().split(' '))
+) : setTimeout(waitInput, 100);
 
-
-    // const prompt = new Prompt({name: '', message: ''});
-    // prompt.run()
-    //     .then(line => line.split(' '))
-    //     .then(([cmd, ...rest]) => bluzelle[cmd](...rest))
-    //     .then(console.log)
-    //     .then(() => setTimeout(loop))
-    //     .catch(e => {
-    //         console.log(e);
-    //         setTimeout(loop);
-    //     });
-
-
-
-
+readyPrompt();
