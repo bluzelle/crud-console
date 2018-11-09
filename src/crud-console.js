@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 const {BluzelleClient} = require('bluzelle');
-const {defaults, extend} = require('lodash');
 const {parseLine} = require('./LineParser');
-const {pipe, join} = require('lodash/fp');
+const {pipe, join, filter, reduce, extend, defaults} = require('lodash/fp');
 
 const commandQueue = [];
 
-const {host, port, namespace} = defaults(require('optimist').argv, {
+const {host, port, namespace} = defaults({
     host: 'test.network.bluzelle.com',
     port: '51010',
     namespace: undefined
-});
+}, require('optimist').argv);
 
 global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
 
@@ -62,10 +61,10 @@ const exit = () => process.exit(0);
 const COMMANDS =  pipe(
     Object.getPrototypeOf,
     Object.getOwnPropertyNames,
-    names => names.filter(name => ['constructor'].includes(name) === false),
-    names => names.filter(name => (/^_/.test(name) === false)),
-    names => names.reduce((cmds, name) => extend(cmds, {[name]: processBluzelleCommand.bind(null, name)}), {}),
-    cmds => extend(cmds, {
+    filter(name => ['constructor'].includes(name) === false),
+    filter(name => (/^_/.test(name) === false)),
+    reduce((cmds, name) => extend({[name]: processBluzelleCommand.bind(null, name)}, cmds), {}),
+    extend({
         help:  showHelp,
         exit: exit
     })
