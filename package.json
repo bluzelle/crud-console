@@ -8,6 +8,7 @@
     "optimist": "^0.6.1"
   },
   "scripts": {
+    "start": "./src/crud-console.js",
     "test": "mocha src"
   }
 }

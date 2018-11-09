@@ -2,7 +2,7 @@
 const {BluzelleClient} = require('bluzelle');
 const {defaults, extend} = require('lodash');
 const {parseLine} = require('./LineParser');
-const {pipe} = require('lodash/fp');
+const {pipe, join} = require('lodash/fp');
 
 const commandQueue = [];
 
@@ -30,14 +30,15 @@ crud-client (${host}:${port}/${namespace})
 TYPE "help" for a list of commands
 `);
 
-const processCommand = ([cmd, ...rest]) => COMMANDS[cmd]([cmd, ...rest]);
+const processCommand = async ([cmd, ...args]) => {
+    COMMANDS[cmd] ? await COMMANDS[cmd](args) : console.log(`${cmd} is not a command`);
+    setTimeout(readyPrompt)
+};
 
-const processBluzelleCommand = ([cmd, ...rest]) => bluzelle[cmd](...rest)
+const processBluzelleCommand = (cmd, args) => bluzelle[cmd](...args)
         .then(console.log)
-        .then(() => setTimeout(readyPrompt))
         .catch(e => {
             console.log(e);
-            setTimeout(readyPrompt);
         });
 
 const readyPrompt = () => {
@@ -50,20 +51,24 @@ const waitInput = async () => commandQueue.length ? (
 ) : setTimeout(waitInput, 100);
 
 const showHelp = () => pipe(
-    Object.getPrototypeOf,
-    Object.getOwnPropertyNames,
-    list => list.filter(it => typeof bluzelle[it] === 'function'),
-    list => list.filter(it => !(/^_/.test(it))),
-    list => list.join('\n'),
-    console.log,
-    readyPrompt
-)(bluzelle);
+    Object.keys,
+    names => names.sort(),
+    join('\n'),
+    console.log
+)(COMMANDS);
+
+const exit = () => process.exit(0);
 
 const COMMANDS =  pipe(
     Object.getPrototypeOf,
     Object.getOwnPropertyNames,
-    names => names.reduce((cmds, it) => extend(cmds, {[it]: processBluzelleCommand}), {}),
-    cmds => extend(cmds, {help:  showHelp})
+    names => names.filter(name => ['constructor'].includes(name) === false),
+    names => names.filter(name => (/^_/.test(name) === false)),
+    names => names.reduce((cmds, name) => extend(cmds, {[name]: processBluzelleCommand.bind(null, name)}), {}),
+    cmds => extend(cmds, {
+        help:  showHelp,
+        exit: exit
+    })
 )(bluzelle);
 
 readyPrompt();
