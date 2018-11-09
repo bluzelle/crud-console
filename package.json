@@ -1,9 +1,13 @@
 {
-  "name": "test",
-  "version": "0.1.0",
-  "private": true,
+  "name": "crud-console",
+  "version": "1.0.0",
   "dependencies": {
     "bluzelle": "^0.3.275",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
     "optimist": "^0.6.1"
+  },
+  "scripts": {
+    "test": "mocha src"
   }
 }
