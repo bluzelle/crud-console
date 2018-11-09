@@ -12,6 +12,6 @@
   "scripts": {
     "start": "./src/crud-console.js",
     "test": "mocha src",
-    "build": "pkg --out-path=dist src/crud-console.js"
+    "build": "pkg --out-path=dist --targets=node8-linux-x64,node8-macos-x64,node8-win-x64 src/crud-console.js"
   }
 }
