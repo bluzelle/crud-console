@@ -35,3 +35,12 @@ scott$ ./crud-console-macos --uuid=scott
  []
  > 
 ```
+
+### Developers Notes
+
+To run the code type 'yarn start'
+
+To run tests type 'yarn test'
+
+To build new executables type 'yarn build'
+
