@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bluzelle": "^0.3.275",
+    "carrier": "^0.3.0",
     "optimist": "^0.6.1",
     "prompt-base": "^5.0.0"
   }
