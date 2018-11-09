@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const {BluzelleClient} = require('bluzelle');
-const {defaults} = require('lodash');
+const {defaults, extend} = require('lodash');
 const {parseLine} = require('./LineParser');
 const {pipe} = require('lodash/fp');
 
@@ -32,7 +32,8 @@ TYPE "help" for a list of commands
 global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
 
 
-const processCommand = ([cmd, ...rest]) => cmd === 'help' ? showHelp() : processBluzelleCommand([cmd, ...rest]);
+
+const processCommand = ([cmd, ...rest]) => COMMANDS[cmd]([cmd, ...rest]);
 
 const processBluzelleCommand = ([cmd, ...rest]) => bluzelle[cmd](...rest)
         .then(console.log)
@@ -51,8 +52,6 @@ const waitInput = async () => commandQueue.length ? (
     await processCommand(parseLine(commandQueue.shift()))
 ) : setTimeout(waitInput, 100);
 
-readyPrompt();
-
 const showHelp = () => pipe(
     Object.getPrototypeOf,
     Object.getOwnPropertyNames,
@@ -62,3 +61,14 @@ const showHelp = () => pipe(
     console.log,
     readyPrompt
 )(bluzelle);
+
+const COMMANDS =  pipe(
+    Object.getPrototypeOf,
+    Object.getOwnPropertyNames,
+    list => list.reduce((cmds, it) => extend(cmds, {[it]: processBluzelleCommand}), {}),
+    cmds => extend(cmds, {help:  showHelp})
+)(bluzelle);
+
+console.log(COMMANDS);
+
+readyPrompt();
