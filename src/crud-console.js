@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const {BluzelleClient} = require('bluzelle');
 const {parseLine} = require('./LineParser');
-const {pipe, join, filter, reduce, extend, defaults} = require('lodash/fp');
+const {pipe, join, filter, reduce, extend, defaults, memoize} = require('lodash/fp');
 
 const commandQueue = [];
 
@@ -11,26 +11,36 @@ const {host, port, namespace} = defaults({
     namespace: undefined
 }, require('optimist').argv);
 
-global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
+
+const init = pipe(
+    initBluzelle,
+    initReadLine,
+    showHeader
+);
+
+const initBluzelle = () =>
+    global.bluzelle = new BluzelleClient(`ws://${host}:${port}`, namespace);
 
 
-const readline = require('readline');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: '> '
-});
+const initReadLine = () => {
+    const readline = require('readline');
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        prompt: '> '
+    });
 
-rl.on('line', line => commandQueue.push(line));
+    rl.on('line', line => commandQueue.push(line));
+};
 
-
+const showHeader = () =>
 console.log(`
 crud-client (${host}:${port}/${namespace})
 TYPE "help" for a list of commands
 `);
 
 const processCommand = async ([cmd, ...args]) => {
-    COMMANDS[cmd] ? await COMMANDS[cmd](args) : console.log(`${cmd} is not a command`);
+    getCommands()[cmd] ? await getCommands()[cmd](args) : console.log(`${cmd} is not a command`);
     setTimeout(readyPrompt)
 };
 
@@ -49,16 +59,18 @@ const waitInput = async () => commandQueue.length ? (
     await processCommand(parseLine(commandQueue.shift()))
 ) : setTimeout(waitInput, 100);
 
-const showHelp = () => pipe(
+const showHelp = pipe(
+    getCommands,
     Object.keys,
     names => names.sort(),
     join('\n'),
     console.log
-)(COMMANDS);
+);
 
 const exit = () => process.exit(0);
 
-const COMMANDS =  pipe(
+const getCommands = memoize(pipe(
+    bluzelle,
     Object.getPrototypeOf,
     Object.getOwnPropertyNames,
     filter(name => ['constructor'].includes(name) === false),
@@ -68,6 +80,6 @@ const COMMANDS =  pipe(
         help:  showHelp,
         exit: exit
     })
-)(bluzelle);
+));
 
-readyPrompt();
+init();
