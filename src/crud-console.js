@@ -2,13 +2,14 @@
 const {BluzelleClient} = require('bluzelle');
 const {parseLine} = require('./LineParser');
 const {pipe, join, filter, reduce, extend, defaults, memoize} = require('lodash/fp');
+const uuidv1 = require('uuid/v1');
 
 const commandQueue = [];
 
 const {host, port, uuid} = defaults({
     host: 'test.network.bluzelle.com',
     port: '51010',
-    uuid: undefined
+    uuid: uuidv1()
 }, require('optimist').argv);
 
 
