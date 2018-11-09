@@ -62,7 +62,7 @@ const showHelp = () => pipe(
 const COMMANDS =  pipe(
     Object.getPrototypeOf,
     Object.getOwnPropertyNames,
-    list => list.reduce((cmds, it) => extend(cmds, {[it]: processBluzelleCommand}), {}),
+    names => names.reduce((cmds, it) => extend(cmds, {[it]: processBluzelleCommand}), {}),
     cmds => extend(cmds, {help:  showHelp})
 )(bluzelle);
 
