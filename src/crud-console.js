@@ -59,6 +59,13 @@ const waitInput = async () => commandQueue.length ? (
 
 const exit = () => process.exit(0);
 
+const subscribeFn = async ([key]) =>
+    await getBluzelle().subscribe(key, val => {
+        console.log(`\n${key} updated: ${val}`);
+        process.stdout.write('> ');
+    });
+
+
 const getCommands = memoize(pipe(
     getBluzelle,
     Object.getPrototypeOf,
@@ -69,7 +76,8 @@ const getCommands = memoize(pipe(
     extend({
         help: () => showHelp(),
         exit: exit
-    })
+    }),
+    obj => (obj.subscribe = subscribeFn) && obj
 ));
 
 const showHelp = pipe(
